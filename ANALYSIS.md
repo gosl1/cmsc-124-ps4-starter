@@ -1,8 +1,5 @@
 # The Search and the Stack
 
-Replace this paragraph after your checks pass. Paste the output of `./trace`
-for one case. Then answer three questions about it.
-
 $ ./trace P08
 == trace P08 ==
 Call: ancestor(tom,X)
@@ -107,7 +104,4 @@ Every Call line is a push. The first one, Call: ancestor(tom,X), is like calling
 
 In Activity 15, when walk(0) returned, its frame was popped and its locals and return address were thrown away, so nothing could go back into it. A goal that exited in the trace is different. After Exit: ancestor(tom,liz), the trace later shows Redo: ancestor(tom,liz) and then Redo: parent(tom,liz), which ends in Exit: parent(tom,bob). So the goal still remembered which fact it used and that more facts were left. That is the choice point. It works even when the frames are deep. Redo: ancestor(tom,pat) reaches into ancestor(bob,pat) and parent(bob,pat), and each one still remembers where it stopped.
 
-
-- Why does swapping the two clauses of `reach/2` change whether the search
-  ever answers, while swapping the two clauses of `ancestor/2` only changes
-  the order of the answers?
+The difference between the two recursive clauses is what they do before calling themselves again. In `reach/2`, the recursive clause calls `reach(X,Z)` before checking `edge(Z,Y)`. Because it recurses first without checking an edge, Prolog can get stuck repeatedly calling itself and never reach an answer. Putting the `edge/2` clause first allows Prolog to check for a connection before trying recursion, giving it a chance to find a path. In `ancestor/2`, however, the recursive clause checks `parent(A,P)` before calling `ancestor(P,D)`. This means every recursive call follows an existing parent relationship, making progress through the family tree. Swapping the clauses only changes whether Prolog looks for a direct parent or a more distant ancestor first, so the answers come out in a different order rather than getting stuck in infinite recursion.
